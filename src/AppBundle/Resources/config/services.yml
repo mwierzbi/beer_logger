@@ -1,0 +1,6 @@
+services:
+    log_data.factory:
+        class: AppBundle\Service\LogDataFactory
+    tracker:
+        class: AppBundle\Service\Tracker
+        arguments: ['@doctrine.orm.entity_manager', '@log_data.factory']
