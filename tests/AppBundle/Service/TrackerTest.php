@@ -1,14 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mariusz
- * Date: 13.08.17
- * Time: 20:48
- */
 
 namespace AppBundle\Service;
 
+use AppBundle\Entity\Device;
 use AppBundle\Entity\LogData;
+use AppBundle\Entity\Measurement;
 use Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\TestCase;
 
@@ -18,6 +14,8 @@ class TrackerTest extends TestCase
     private $em;
     /** @var  LogDataFactory */
     private $logDataFactory;
+    /** @var  DeviceFactory */
+    private $deviceFactory;
     /** @var  Tracker */
     private $service;
 
@@ -25,16 +23,52 @@ class TrackerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManager::class);
         $this->logDataFactory = $this->createMock(LogDataFactory::class);
-        $this->service = new Tracker($this->em, $this->logDataFactory);
+        $this->logDataFactory->method('createLogData')->willReturn(new LogData());
+        $this->deviceFactory = $this->createMock(DeviceFactory::class);
+        $this->service = new Tracker($this->em, $this->logDataFactory, $this->deviceFactory);
     }
 
     /**
      * @test
      */
-    public function shouldPersistLogData()
+    public function shouldPersistLastValue()
     {
-        $this->em->expects($this->once())->method('persist')->with($this->isInstanceOf(LogData::class));
-        $this->em->expects($this->once())->method('flush');
+        $device = new Device();
+        $this->deviceFactory->method('createDevice')->willReturn($device);
+        $this->service->track('mac address', 'test value');
+
+        $this->assertEquals('test value', $device->getLastValue());
+    }
+
+    /**
+     * @test
+     */
+    public function shouldPersistDataForActiveMeasurement()
+    {
+
+        $measurement = $this->createMock(Measurement::class);
+        $measurement->method('isActive')->willReturn(true);
+        $device = $this->createMock(Device::class);
+        $device->method('getMeasurements')->willReturn([$measurement]);
+        $this->deviceFactory->method('createDevice')->willReturn($device);
+
+        $this->logDataFactory->expects($this->once())->method('createLogData');
+        $this->service->track('mac address', 'test value');
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotPersistDataForActiveMeasurement()
+    {
+
+        $measurement = $this->createMock(Measurement::class);
+        $measurement->method('isActive')->willReturn(false);
+        $device = $this->createMock(Device::class);
+        $device->method('getMeasurements')->willReturn([$measurement]);
+        $this->deviceFactory->method('createDevice')->willReturn($device);
+
+        $this->logDataFactory->expects($this->never())->method('createLogData');
         $this->service->track('mac address', 'test value');
     }
 }

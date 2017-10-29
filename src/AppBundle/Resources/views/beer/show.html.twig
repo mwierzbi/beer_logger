@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="title_left">
+        <h3>{{ beer.name }} - {{ "beer.pages.show"|trans }}</h3>
+    </div>
+    <div class="row">
+        {% for measurement in beer.measurements %}
+            <div class="col-md-4 col-sm-4 col-xs-12">
+                <div class="x_panel tile fixed_height_320">
+                    <div class="x_title">
+                        <h2>{{ measurement.name }}</h2>
+                        <div class="form-inline form-group pull-right">
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="limit_{{ measurement.id }}" value="10">
+                                <div class="input-group-addon">{{ "labels.minute"|trans }}</div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content text-center" >
+                        {% if measurement.lastLogdata %}
+                            <canvas id="mChart_{{ measurement.id }}" width="400" height="200"></canvas>
+                            <div style="position: absolute; top:0; left: 40%">
+                                <div class="row" id="lastValue_{{ measurement.id }}" style="font-size: 6em">{{ measurement.lastLogdata.value }}</div>
+                                <div class="row" id="lastDate_{{ measurement.id }}">{{ measurement.lastLogdata.createDate|date('d-m-Y H:i:s') }}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="dashboard_graph">
+
+                <div class="row x_title">
+                    <div class="col-md-6">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <a href="{{ path('addMeasurementToBeer', {id: beer.id}) }}" class="btn btn-primary">
+                        {{ "beer.add.measurement"|trans }}
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        {% for measurement in beer.measurements %}
+            var ctx = $('#mChart_{{ measurement.id }}');
+            charts[{{ measurement.id }}] = new Chart(ctx, defoultChart);
+        {% endfor %}
+
+        $( document ).ready(function () {
+            initMeasurementCharts({{ beer.id }});
+            var t = setInterval(function () {
+                initMeasurementCharts({{ beer.id }});
+            }, 5000);
+        });
+
+    </script>
+{% endblock %}
+

@@ -17,3 +17,19 @@ services:
         resource: '../../src/AppBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
+
+    AppBundle\Repository\BeerRepository:
+        factory: doctrine.orm.entity_manager:getRepository
+        arguments:
+            - AppBundle\Entity\Beer
+        public: true
+    AppBundle\Repository\DeviceRepository:
+        factory: doctrine.orm.entity_manager:getRepository
+        arguments:
+            - AppBundle\Entity\Device
+        public: true
+    AppBundle\Repository\MeasurementRepository:
+        factory: doctrine.orm.entity_manager:getRepository
+        arguments:
+            - AppBundle\Entity\Measurement
+        public: true

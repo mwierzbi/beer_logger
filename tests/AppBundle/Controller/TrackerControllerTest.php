@@ -28,7 +28,7 @@ class TrackerControllerTest extends WebTestCase
     public function testValidDataOnIndex()
     {
         $client = static::createClient();
-        $param = ['mac' => 'testMac', 'value'=>'test'];
+        $param = ['mac' => 'test1', 'value'=>rand(20,60)];
         $url = $client->getContainer()->get('router')->generate('tracker', $param);
         $crawler = $client->request('GET', $url);
 

@@ -24,7 +24,7 @@
                     <div class="col-md-3 left_col">
                         <div class="left_col scroll-view">
                             <div class="navbar nav_title" style="border: 0;">
-                                <a href={{ path('homepage') }} class="site_title"><i class="fa fa-beer"></i></a>
+                                {#<a href={{ path('homepage') }} class="site_title"><i class="fa fa-beer"></i></a>#}
                             </div>
 
                             <div class="clearfix"></div>
@@ -32,13 +32,16 @@
                             <!-- sidebar menu -->
                             <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                                 <div class="menu_section">
-                                    <h3>General</h3>
                                     <ul class="nav side-menu">
-                                        <li><a><i class="fa fa-home"></i> Home <span class="fa fa-chevron-down"></span></a>
+                                        <li>
+                                            <a>
+                                                <i class="fa fa-beer"></i>
+                                                {{ "beer.beer"|trans }}
+                                                <span class="fa fa-chevron-down"></span>
+                                            </a>
                                             <ul class="nav child_menu">
-                                                <li><a href="index.html">Dashboard</a></li>
-                                                <li><a href="index2.html">Dashboard2</a></li>
-                                                <li><a href="index3.html">Dashboard3</a></li>
+                                                <li><a href="{{ path('beerList') }}">{{ "beer.list.title"|trans }}</a></li>
+                                                <li><a href="{{ path('addBeer') }}">{{ "beer.add.title"|trans }}</a></li>
                                             </ul>
                                         </li>
                                     </ul>
@@ -79,7 +82,21 @@
                     <!-- /top navigation -->
 
                     <!-- page content -->
-                    <div class="right_col" role="main">
+                    <div class="right_col" role="main" style="min-height: 750px">
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="alert alert-{{ label }} alert-dismissible fade in" role="alert">
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+                                        </button>
+                                        {{ message }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endfor %}
+
                         {% block content %}
                         <!-- top tiles -->
                         <div class="row tile_count">
@@ -121,6 +138,20 @@
                 </div>
             </div>
         {% endblock %}
-        {% block javascripts %}{% endblock %}
+        {% block javascripts %}
+            {% javascripts
+                '@AppBundle/Resources/public/js/jquery/jquery.js'
+                '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/js/bootstrap.min.js'
+                '@AppBundle/Resources/public/js/smartresize.js'
+                '@AppBundle/Resources/public/js/custom.js'
+                '%kernel.root_dir%/../vendor/moment/moment/min/moment.min.js'
+                '%kernel.root_dir%/../vendor/nnnick/chartjs/dist/Chart.js'
+                '@AppBundle/Resources/public/js/measurement.chart.js'
+            %}
+            <script src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+        {% endblock %}
     </body>
 </html>

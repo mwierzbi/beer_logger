@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * LogData
@@ -24,13 +25,6 @@ class LogData
     /**
      * @var string
      *
-     * @ORM\Column(name="mac", type="string", length=20)
-     */
-    private $mac;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="value", type="string", length=255)
      */
     private $value;
@@ -39,8 +33,15 @@ class LogData
      * @var \DateTime
      *
      * @ORM\Column(name="createDate", type="datetime")
+     * @Serializer\Type("DateTime<'Y-m-d H:i:s'>")
      */
     private $createDate;
+
+    /**
+     * @var Measurement
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Measurement", inversedBy="logData")
+     */
+    private $measurement;
 
 
     /**
@@ -53,29 +54,6 @@ class LogData
         return $this->id;
     }
 
-    /**
-     * Set mac
-     *
-     * @param string $mac
-     *
-     * @return LogData
-     */
-    public function setMac($mac)
-    {
-        $this->mac = $mac;
-
-        return $this;
-    }
-
-    /**
-     * Get mac
-     *
-     * @return string
-     */
-    public function getMac()
-    {
-        return $this->mac;
-    }
 
     /**
      * Set value
@@ -124,5 +102,23 @@ class LogData
     {
         return $this->createDate;
     }
+
+    /**
+     * @return Measurement
+     */
+    public function getMeasurement(): Measurement
+    {
+        return $this->measurement;
+    }
+
+    /**
+     * @param Measurement $measurement
+     */
+    public function setMeasurement(Measurement $measurement)
+    {
+        $this->measurement = $measurement;
+    }
+
+
 }
 

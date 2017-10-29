@@ -1,0 +1,10 @@
+labels:
+  actions: Actions
+  name: Name
+  save: Save
+  show: Show
+beer:
+  pages:
+    list: Beer list
+    show: Details
+    add: Add new beer
